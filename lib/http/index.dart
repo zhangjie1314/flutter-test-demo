@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_test_app/config/config.dart';
+import 'package:self_app_one/config/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DioUtil {
   static DioUtil instance;
@@ -15,16 +17,26 @@ class DioUtil {
     return instance;
   }
 
+  getTokenStr() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = '';
+    Map userInfo = prefs.getString('userInfo') != null
+        ? jsonDecode(prefs.getString('userInfo'))
+        : {};
+    if (userInfo.isNotEmpty) {
+      token = userInfo['token'];
+    }
+    return token;
+  }
+
   DioUtil() {
     options = new BaseOptions(
         baseUrl: Config.apiHost,
         connectTimeout: 10000,
         receiveTimeout: 5000,
         headers: {
-          'Accept': 'application/json, */*',
-          'Content-Type': 'application/json;charset=UTF-8',
+          'Accept': 'application/json, text/plain, */*',
           'ver': '1.0.0',
-          'token': ''
         },
         contentType: ContentType.parse("application/json;charset=UTF-8"));
 
@@ -50,9 +62,17 @@ class DioUtil {
   // get请求
   get(url, {data, options, cancelToken}) async {
     Response response;
+    print('get data--------------$data');
     try {
-      response = await dio.get(url,
-          queryParameters: data, options: options, cancelToken: cancelToken);
+      options = Options(
+        headers: {'token': await getTokenStr()},
+      );
+      response = await dio.get(
+        url,
+        queryParameters: data,
+        options: options,
+        cancelToken: cancelToken,
+      );
     } on DioError catch (e) {
       print('get error--------------$e');
       formatError(e);
@@ -64,10 +84,18 @@ class DioUtil {
   post(url, {data, options, cancelToken}) async {
     Response response;
     try {
-      response = await dio.post(url,
-          queryParameters: data, options: options, cancelToken: cancelToken);
+      print('post data---------$data');
+      options = Options(
+        headers: {'token': await getTokenStr()},
+      );
+      response = await dio.post(
+        url,
+        data: data,
+        options: options,
+        cancelToken: cancelToken,
+      );
     } on DioError catch (e) {
-      print('downloadFile error---------$e');
+      print('post error---------$e');
       formatError(e);
     }
     return response;

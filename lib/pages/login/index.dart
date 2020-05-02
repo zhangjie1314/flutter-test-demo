@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
-import 'package:flutter_test_app/http/index.dart';
-import 'package:flutter_test_app/config/apis.dart';
-import 'package:flutter_test_app/util/ToastUtil.dart';
+import 'package:self_app_one/http/index.dart';
+import 'package:self_app_one/config/apis.dart';
+import 'package:self_app_one/util/ToastUtil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -29,10 +30,7 @@ class _LoginPageState extends State<LoginPage> {
         ZToast.show(msg: userInfo['msg']);
       } else {
         prefs.setString('userInfo', userInfo.toString());
-        Navigator.pushNamedAndRemoveUntil(context, '/', (el) {
-          print(el);
-          return;
-        });
+        Navigator.of(context).pushReplacementNamed('/');
       }
     }
   }
@@ -52,37 +50,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xff313340),
+        backgroundColor: Color(0xff4B4D4D),
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+        ),
         body: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(30.0),
           child: Column(
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Color(0x00000000),
-                    padding: EdgeInsets.all(0),
-                    textColor: Colors.white,
-                    elevation: 0.0,
-                    highlightElevation: 0.0,
-                    highlightColor: Color(0x00000000),
-                    splashColor: Color(0x00000000),
-                    child: Text(
-                      '注册',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    onPressed: () {
-                      print('object 注册');
-                    },
-                  )
-                ],
-              ),
-              Row(
                 children: <Widget>[
                   Text(
-                    '教练登陆',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    '密码登陆',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   )
                 ],
               ),
@@ -90,30 +75,76 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      keyboardType: TextInputType.phone,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                          labelText: '手机号',
-                          labelStyle: TextStyle(color: Colors.white)),
-                      onSaved: haldenNameInput,
-                      validator: (val) {
-                        const _regExp =
-                            r"^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$";
-                        if (val == '') {
-                          return '请输入手机号！';
-                        }
-                        if (!RegExp(_regExp).hasMatch(val)) {
-                          return '请输入正确的手机号码！';
-                        }
-                        return null;
-                      },
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 70,
+                        bottom: 20,
+                      ),
+                      child: TextFormField(
+                        inputFormatters: [LengthLimitingTextInputFormatter(11)],
+                        autofocus: true,
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(
+                            left: 20,
+                            right: 20,
+                            top: 16,
+                            bottom: 16,
+                          ),
+                          hintText: '手机号码',
+                          hintStyle: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                              width: 0,
+                            ),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          errorStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromARGB(40, 255, 255, 255),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontFamily: 'DINCondensedBold',
+                        ),
+                        onSaved: haldenNameInput,
+                        validator: (val) {
+                          const _regExp =
+                              r"^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$";
+                          if (val == '') {
+                            return '请输入手机号！';
+                          }
+                          if (!RegExp(_regExp).hasMatch(val)) {
+                            return '请输入正确的手机号码！';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
-                    TextFormField(
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                          labelText: '密码',
-                          labelStyle: TextStyle(color: Colors.white),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 20),
+                      child: TextFormField(
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontFamily: 'DINCondensedBold',
+                        ),
+                        decoration: InputDecoration(
                           suffixIcon: IconButton(
                             color: Colors.white,
                             icon: Icon(_passIcon),
@@ -123,19 +154,70 @@ class _LoginPageState extends State<LoginPage> {
                                 _obscureText = !_obscureText;
                               });
                             },
-                          )),
-                      obscureText: _obscureText,
-                      validator: (val) {
-                        return val.length < 6 ? "密码长度错误" : null;
-                      },
-                      onSaved: haldenPasswordInput,
+                          ),
+                          contentPadding: EdgeInsets.only(
+                            left: 20,
+                            right: 20,
+                            top: 16,
+                            bottom: 16,
+                          ),
+                          hintText: '登陆密码',
+                          hintStyle: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                              width: 0,
+                            ),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          errorStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromARGB(40, 255, 255, 255),
+                        ),
+                        obscureText: _obscureText,
+                        validator: (val) {
+                          return val.length < 6 ? "密码长度错误" : null;
+                        },
+                        onSaved: haldenPasswordInput,
+                      ),
                     ),
-                    RaisedButton(
-                      highlightElevation: 0.0,
-                      elevation: 0.0,
-                      child: Text('登陆'),
+                    FlatButton(
                       onPressed: loginFun,
-                    )
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Color(0xff12B8C5),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: 20,
+                            bottom: 20,
+                          ),
+                          child: Align(
+                            child: Text(
+                              '登陆',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               )

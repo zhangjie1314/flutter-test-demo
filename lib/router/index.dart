@@ -9,7 +9,7 @@ class NameRouter {
   // 初始化app
   static Widget initApp() {
     return MaterialApp(
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: NameRouter.initRoutes(),
     );
   }
