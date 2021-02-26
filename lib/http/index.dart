@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:self_app_one/config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,14 +31,15 @@ class DioUtil {
 
   DioUtil() {
     options = new BaseOptions(
-        baseUrl: Config.apiHost,
-        connectTimeout: 10000,
-        receiveTimeout: 5000,
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'ver': '1.0.0',
-        },
-        contentType: ContentType.parse("application/json;charset=UTF-8"));
+      baseUrl: Config.apiHost,
+      connectTimeout: 10000,
+      receiveTimeout: 5000,
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'ver': '1.0.0',
+      },
+      contentType: "application/json;charset=UTF-8",
+    );
 
     dio = new Dio(options);
     // cookie 管理

@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/screen_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ZToast {
   static show({
     @required String msg,
-    Toast toastLength,
-    int timeInSecForIos = 3,
+    Toast toastLength = Toast.LENGTH_SHORT,
+    int timeInSecForIosWeb = 3,
     double fontSize = 16.0,
-    ToastGravity gravity,
-    Color backgroundColor,
-    Color textColor,
+    ToastGravity gravity = ToastGravity.CENTER,
+    Color backgroundColor = Colors.black87,
+    Color textColor = Colors.white,
   }) {
     Fluttertoast.showToast(
       msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIos: 3,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
+      toastLength: toastLength,
+      gravity: gravity,
+      timeInSecForIosWeb: timeInSecForIosWeb,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      fontSize: ScreenUtil().setSp(fontSize),
     );
   }
 }
