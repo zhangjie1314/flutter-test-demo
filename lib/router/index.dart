@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../pages/index/index.dart';
 import '../pages/second/index.dart';
 import '../pages/login/index.dart';
@@ -8,9 +9,13 @@ class NameRouter {
 
   // 初始化app
   static Widget initApp() {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: NameRouter.initRoutes(),
+    return ScreenUtilInit(
+      designSize: Size(375, 812),
+      allowFontScaling: false,
+      builder: () => MaterialApp(
+        initialRoute: '/',
+        routes: NameRouter.initRoutes(),
+      ),
     );
   }
 
